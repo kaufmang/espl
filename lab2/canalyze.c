@@ -12,45 +12,19 @@ int main(int argc, char **argv) {
 int canalyze(char* fileAdres) 
 {
   
-  /*
-  int check(char* word){
-    switch (word){
-      case "auto":return 0;
-      case "break":return 0;
-      case "case":return 0;
-      case "char":return 0;
-      case "const":return 0;
-      case "continue":return 0;
-      case "default":return 0;
-      case "do":return 0;
-      case "double":return 0;
-      case "else":return 0;
-      case "enum":return 0;
-      case "extern":return 0;
-      case "float":return 0;
-      case "for":return 0;
-      case "goto":return 0;
-      case "if":return 0;
-      case "long": return 0;
-      case "register": return 0;
-      case "return": return 0;
-      case "short": return 0;
-      case "signed": return 0;
-      case "sizeof": return 0;
-      case "static": return 0;
-      case "long": return 0;
-      case "switch": return 0;
-      case "typedef": return 0;
-      case "union": return 0;
-      case "unsigned": return 0;
-      case "void": return 0;
-      case "volatile": return 0;
-      case "while": return 0;
-      default: return 1;
+  static char* keywords[]={"auto","break","case","char","const","continue","default","do","double",
+  "else","enum","extern","float","for","goto","if","long","register","return","short","signed","sizeof",
+  "static","long","switch","typedef","union","unsigned","void","volatile","while", NULL};
+  
+  int iskeyword(char *name) {
+    char **keyword = keywords;
+    while(*keyword) {
+        if(!strcmp(*keyword, name))
+            return 1;
+        ++keyword;
     }
-      return 1;
+    return 0;
   }
-  */
 
   int sort(const void *p1, const void *p2)
   {
@@ -59,6 +33,7 @@ int canalyze(char* fileAdres)
   
   FILE *file;
   char str1[50];
+  char x;
   namelist nl = make_namelist();
 
   file = fopen(fileAdres,"r");
@@ -68,17 +43,35 @@ int canalyze(char* fileAdres)
     return -1;
   }
   
-  while (fscanf(file,"%s",str1) != EOF){
-//    if (check(str1) == 1)
-      add_name(nl, str1);
+  x=fgetc(file);
+  while(x!=EOF){
+      int i=0;
+      int flag = 0;
+      int c;
+      for(c=0; c<50; c++){
+	    str1[c]=0;
+      } 
+      while(isalpha(x)!=0){
+            str1[i]=x;
+	    i++;
+	    x=getc(file);
+	    flag = 1;
+      }
+      if (flag = 1 && iskeyword(str1) == 0){
+	add_name(nl, str1);
+      }
+      int j;
+      for(j=0; j<50; j++){
+	    str1[j]=0;
+      } 
+      x=getc(file);
   }
+  
   int i;
-//  for (i=0; i < nl->size; ++i){
-//    printf("%s\n", nl->names[i].name);
-//  }
   qsort(&(nl->names[1]), nl->size, sizeof(nl->names[1]), sort);
-  for (i=0; i < nl->size; ++i){
-    printf("%s\n", nl->names[i].name);
+  for (i=0; i <= nl->size; ++i){
+    if (i!=1)
+      printf("%s %d\n", nl->names[i].name, nl->names[i].count);
   }
   fclose(file);
 }
