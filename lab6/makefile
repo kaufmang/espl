@@ -12,7 +12,7 @@ asmart: asmart.o prsym.o font.o length.o puts.o write.o printword.o
 	ld -melf_i386 -g -o $@ $^
 
 prsym.o: prsym.c
-asmart.o: asmart.asm
+ascart.o: asmart.asm
 font.o: font.c
 length.o: length.c
 puts.o: puts.c
