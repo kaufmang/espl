@@ -1,57 +1,61 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 
-int bcm(char* frame1, char* frame2)
-{
-  FILE *f1, *f2;
-  char *buffer1;
-  char *buffer2;
-  unsigned long fileLen1, fileLen2;
-  int n1, n2;
-  
-  
-  f1=fopen(frame1, "rb"); 
-  f2=fopen(frame2, "rb");
-  
-  if(!f1)
-  {
-    printf("Error opening file %s\n", frame1);
-    fclose(f1);
-    return -1;
-  }
-    
-  if(!f2)
-  {
-    printf("Error opening file %s\n", frame2);
-    fclose(f2);
-    return -1;
+int main(int argc, char *argv[]) {
+  FILE *fp1, *fp2;
+  int ch1, ch2, same;
+  unsigned long l;
+
+  if(argc!=3) {
+    printf("Usage: compare <file 1> <file 2>\n");
+    exit(1);
   }
 
- n1 = (int)fgetc(f1);
- n2 = (int)fgetc(f2);
- int i = 0;
- while (n1!=EOF || n2!=EOF){
-   if (n1 != n2){
-      printf("byte %d ",i);
-      printf("%d %d\n",n1, n2);
+  /* open first file */
+  if((fp1 = fopen(argv[1], "rb"))==NULL) {
+    printf("Cannot open first file.\n");
+    exit(1);
+  }
+
+  /* open second file */
+  if((fp2 = fopen(argv [2], "rb"))==NULL) {
+    printf("Cannot open second file.\n");
+    exit(1);
+  }
+
+  l = 0;
+  same = 1;
+  /* compare the files */
+  while(!feof(fp1)) {
+    ch1 = fgetc(fp1);
+    if(ferror(fp1)) {
+      printf("Error reading first file.\n");
+      exit(1);
+    }
+    ch2 = fgetc(fp2);
+    if(ferror(fp2)) {
+      printf("Error reading second file.\n");
+      exit(1);
+    }
+    if(ch1 != ch2) {
+      printf("byte %lu +%x -%x\n", l,ch1,ch2);
+      same = 0;
       break;
     }
-    else{
-    n1 = (int)fgetc(f1);
-    n2 = (int)fgetc(f2);
-    i++;
-    }
- }    
-    
-  fclose(f1);
-  fclose(f2);
+    l++;
+  }
+  if(same)
+      printf("Files are the same.\n");
+
+  if(fclose( fp1 ) == EOF) {
+    printf("Error closing first file.\n");
+    exit(1);
+  }
+
+  if(fclose( fp2 ) == EOF) {
+    printf("Error closing second file.\n");
+    exit(1);
+  }
 
   return 0;
-}
-
-void main(int argc, char **argv)
-{
-	bcm(argv[1],argv[2]);
-
 }
